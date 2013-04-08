@@ -1,0 +1,55 @@
+# check if the argument is in PATH
+function path_contains() {
+	if [ -z "$1" ]; then return 1; fi
+	if [[ ":$PATH:" == *":$1:"* ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+# ensure the argument is in PATH
+function ensure_path() {
+	if [ -z "$1" ]; then return 1; fi
+	if \! path_contains "$1"; then
+		export PATH="$PATH:$1"
+	fi
+	return 0
+}
+
+# log command output
+function log_cmd() {
+        local to_file="$1"
+        shift
+        if [ -z "$to_file" ]; then
+                echo "Need a file to log to." 2>&1
+                return 1
+        elif [ -z "$*" ]; then
+                echo "Need a command to run." 2>&1
+                return 1
+        fi
+
+        echo "DATE: $(date)" > "$to_file"
+        echo "DIR: $(pwd)" >> "$to_file"
+        echo "CMD: $*" >> "$to_file"
+        echo "OUTPUT:" >> "$to_file"
+        echo >> $to_file
+        
+        local start=$(($(date +%s%N)/1000000))
+        eval "$@ 2>&1 | tee -a '$to_file'"
+        local end=$(($(date +%s%N)/1000000))
+        local timems=$((end - start))
+        echo -e "\nTIME: $timems ms." >> $to_file
+        
+        return $?
+}
+
+ensure_path /sbin
+ensure_path /usr/sbin
+
+alias l='ls -lAh --color=auto'
+
+# log screen output
+alias screen='screen -L'
+
+
