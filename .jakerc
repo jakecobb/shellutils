@@ -8,12 +8,14 @@ function path_contains() {
 	fi
 }
 
-# ensure the argument is in PATH
-function ensure_path() {
-	if [ -z "$1" ]; then return 1; fi
-	if \! path_contains "$1"; then
-		export PATH="$PATH:$1"
-	fi
+# ensure the arguments are in PATH
+function ensure_paths() {
+	while [ -z "$1" ]; do
+		if ! path_contains "$1"; then
+			export PATH="$PATH:$1"
+		fi
+		shift
+	done
 	return 0
 }
 
@@ -44,8 +46,7 @@ function log_cmd() {
         return $?
 }
 
-ensure_path /sbin
-ensure_path /usr/sbin
+ensure_paths /sbin /usr/sbin /usr/local/sbin
 
 alias l='ls -lAh --color=auto'
 
