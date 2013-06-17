@@ -10,7 +10,7 @@ function path_contains() {
 
 # ensure the arguments are in PATH
 function ensure_paths() {
-	while [ -z "$1" ]; do
+	while [ -n "$1" ]; do
 		if ! path_contains "$1"; then
 			export PATH="$PATH:$1"
 		fi
