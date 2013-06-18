@@ -46,6 +46,22 @@ function log_cmd() {
         return $?
 }
 
+# sets and exports all proxy environment variables
+function set_proxy() {
+	local varlist='http_proxy https_proxy ftp_proxy socks_proxy'
+	varlist="$varlist $(echo "$varlist" | tr '[:lower:]' '[:upper:]')"
+	if [ -z "$1" ]; then
+		export -n $varlist
+		echo 'set_proxy: proxy settings cleared.'
+	else
+		for var in $varlist; do
+			eval export "$var=\"$1\""
+		done
+		echo "set_proxy: proxy set to: $1"
+	fi
+}
+
+
 ensure_paths /sbin /usr/sbin /usr/local/sbin
 
 alias l='ls -lAh --color=auto'
