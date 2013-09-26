@@ -69,4 +69,6 @@ alias l='ls -lAh --color=auto'
 # log screen output
 alias screen='screen -L'
 
+# show listening ports
+alias ports='sudo lsof -i -n -P | grep -i listen'
 
