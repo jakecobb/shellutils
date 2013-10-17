@@ -72,3 +72,4 @@ alias screen='screen -L'
 # show listening ports
 alias ports='sudo lsof -i -n -P | grep -i listen'
 
+alias apt-update='sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get autoclean'
