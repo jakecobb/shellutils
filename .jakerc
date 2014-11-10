@@ -10,24 +10,34 @@ function path_contains() {
 
 # ensure the arguments are in PATH
 function ensure_paths() {
-	local prepend=0
-	while getopts a opt; do
-		case "$opt" in
-			p) prepend=1 ;;
-			*) break ;;
-		esac
-	done
-	shift $((OPTIND-1))
+	# check if prepend or append mode
+	local prepend=1
+	if [ "$1" = "-a" ]; then
+		prepend=0
+		shift
+	fi
 
-	while [ -n "$1" ]; do
-		if ! path_contains "$1"; then
-			if [ $prepend -eq 0 ]; then
-				export PATH="$1:$PATH"
+	# maintain argument order when inserting
+	local args
+	if [ $prepend -eq 0 ]; then
+		args=( "$@" )
+	else
+		local idx
+		local origargs=("$@")
+		args=()
+		for ((idx=${#origargs[@]}-1; idx >= 0; --idx )); do
+			args+=(${origargs[$idx]})
+		done
+	fi
+
+	for patharg in "${args[@]}"; do
+		if ! path_contains "$patharg"; then
+			if [ $prepend -ne 0 ]; then
+				export PATH="$patharg:$PATH"
 			else
-				export PATH="$PATH:$1"
+				export PATH="$PATH:$patharg"
 			fi
 		fi
-		shift
 	done
 	return 0
 }
