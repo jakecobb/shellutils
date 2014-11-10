@@ -10,9 +10,22 @@ function path_contains() {
 
 # ensure the arguments are in PATH
 function ensure_paths() {
+	local prepend=0
+	while getopts a opt; do
+		case "$opt" in
+			p) prepend=1 ;;
+			*) break ;;
+		esac
+	done
+	shift $((OPTIND-1))
+
 	while [ -n "$1" ]; do
 		if ! path_contains "$1"; then
-			export PATH="$PATH:$1"
+			if [ $prepend -eq 0 ]; then
+				export PATH="$1:$PATH"
+			else
+				export PATH="$PATH:$1"
+			fi
 		fi
 		shift
 	done
